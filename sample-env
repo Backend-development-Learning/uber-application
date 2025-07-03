@@ -1,0 +1,10 @@
+# Sample .env file for local development
+# Uber Services
+NODE_ENV=production
+
+# Logging Service
+NODE_ENV=development
+MONGO_URI=mongodb://mongo:27017/logging
+
+# Rider Services
+NODE_ENV=production

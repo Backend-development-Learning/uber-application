@@ -19,17 +19,17 @@ services:
       - "3001:3001"
     environment:
       - NODE_ENV=production
-  logging-service:
+  logging:
     build:
       context: .
-      dockerfile: ./apps/logging-service/Dockerfile
+      dockerfile: ./apps/logging/Dockerfile
     ports:
       - "3002:3001"
     environment:
       - NODE_ENV=development
       - MONGO_URI=mongodb://mongo:27017/logging
     volumes:
-      - ./apps/logging-service:/app
+      - ./apps/logging:/app
       - ./package.json:/app/package.json
       - ./package-lock.json:/app/package-lock.json
     depends_on:
