@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=adminpass
+      - MONGO_INITDB_DATABASE=logging
+    command: >
+      bash -c 'mongod --bind_ip_all --auth & sleep 5 && mongo admin -u admin -p adminpass --eval "db.createUser({user: 'logginguser', pwd: 'loggingpass', roles: [{role: 'readWrite', db: 'logging'}]})" && fg'
+  uber-services:
+    build:
+      context: .
+      dockerfile: ./apps/uber-services/Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+  logging-service:
+    build:
+      context: .
+      dockerfile: ./apps/logging-service/Dockerfile
+    ports:
+      - "3002:3001"
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/logging
+    volumes:
+      - ./apps/logging-service:/app
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+    depends_on:
+      - mongo
+  rider-services:
+    build:
+      context: .
+      dockerfile: ./apps/rider-services/Dockerfile
+    ports:
+      - "3003:3001"
+    environment:
+      - NODE_ENV=production
